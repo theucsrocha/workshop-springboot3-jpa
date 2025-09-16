@@ -9,6 +9,7 @@ import java.util.Set;
 import com.educandoweb.course.entities.enums.OrderStatus;
 import com.fasterxml.jackson.annotation.JsonFormat;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -16,6 +17,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
+import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 
 @Entity
@@ -32,13 +34,16 @@ public class Order implements Serializable {
 
 	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss'Z'", timezone = "GMT")
 	private Instant moment;
-	
+
 	@ManyToOne
 	@JoinColumn(name = "client_id")
 	private User client;
 
 	@OneToMany(mappedBy = "id.order")
 	private Set<OrderItem> itens = new HashSet<>();
+
+	@OneToOne(mappedBy = "order", cascade = CascadeType.ALL)
+	private Payment peyment;
 
 	public Order() {
 
@@ -79,8 +84,8 @@ public class Order implements Serializable {
 	public OrderStatus getOrderStatus() {
 		return OrderStatus.valueOf(orderStatus);
 	}
-	
-	public Set<OrderItem> getItems(){
+
+	public Set<OrderItem> getItems() {
 		return itens;
 	}
 
@@ -89,6 +94,14 @@ public class Order implements Serializable {
 			this.orderStatus = orderStatus.getCode();
 		}
 
+	}
+
+	public Payment getPayment() {
+		return peyment;
+	}
+
+	public void setPayment(Payment peyment) {
+		this.peyment = peyment;
 	}
 
 	@Override
